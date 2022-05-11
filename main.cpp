@@ -111,7 +111,6 @@ int main(int argc, char* argv[]) {
     game_is_running = initializeWindow(window, renderer);
 
     setup(); //Star method like a game Engine (start method in unity)
-
     while(game_is_running) {
 
         //Three main pillars of a game

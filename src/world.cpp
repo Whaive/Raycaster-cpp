@@ -7,13 +7,14 @@ World::World() {
 }
 
 World::~World() {
-    free(map);
+    
+    delete[] map;
 }
 
 void World::init(int* map, glm::vec2 mapSize, int cellSize) {
 
     int size = mapSize.x * mapSize.y;
-    this->map = (int *) malloc(size);
+    this->map = new int[size];
     for(int i = 0; i < size; i++)
         this->map[i] = map[i];
     
