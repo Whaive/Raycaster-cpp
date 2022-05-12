@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include <raycaster/player.h>
+#include <raycaster/common.h>
 
 #define DG 0.01745329
 
@@ -36,16 +37,15 @@ void Player::draw(SDL_Renderer *renderer) {
     SDL_RenderDrawLine(renderer, position.x, position.y, position.x + rotation.x*10, position.y + rotation.y*10);
 }
 
-// ! Very Unreadable, needs change
-void Player::drawRays(SDL_Renderer *renderer, int *map, float cellSize, float rayAngle) {
+void Player::drawRays(SDL_Renderer *renderer, int *map, glm::vec2 mapSize, float cellSize, float rayAngle) {
 
     glm::vec2 rayStart = position / cellSize;
     glm::vec2 rayDir = glm::vec2(cos(angle + DG * rayAngle), sin(angle + DG * rayAngle));
 
-    glm::vec2 stepSize = glm::vec2(sqrt(1 + pow(rayDir.y / rayDir.x, 2)), sqrt(1 + pow(rayDir.x / rayDir.y, 2)));
+    glm::vec2 stepSize = glm::vec2(sqrt(1 + pow(rayDir.y / rayDir.x, 2)), sqrt(1 + pow(rayDir.x / rayDir.y, 2))); //Delta Distance
     glm::ivec2 mapCheck = rayStart;
 
-    glm::vec2 rayLength;
+    glm::vec2 rayLength; // stepDistance
 
     glm::vec2 step;
 
@@ -85,15 +85,17 @@ void Player::drawRays(SDL_Renderer *renderer, int *map, float cellSize, float ra
             mapCheck.x += step.x;
             distance = rayLength.x;
             rayLength.x += stepSize.x;
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         }
         else {
             
             mapCheck.y += step.y;
             distance = rayLength.y;
             rayLength.y += stepSize.y;
+            SDL_SetRenderDrawColor(renderer, 128, 0, 0, 255);
         }
 
-        if(mapCheck.x >= 0 && mapCheck.x < 8 && mapCheck.y >= 0 && mapCheck.y < 8) {
+        if(mapCheck.x >= 0 && mapCheck.x < mapSize.x && mapCheck.y >= 0 && mapCheck.y < mapSize.y) {
 
             if(map[mapCheck.x * 8 + mapCheck.y] == 1) {
                 tileFound = true;
@@ -101,7 +103,18 @@ void Player::drawRays(SDL_Renderer *renderer, int *map, float cellSize, float ra
         }
     }
 
-    glm::vec2 intersection;
+
+    float lineHeight = abs(WINDOW_HEIGHT / distance);
+    int drawStart = -lineHeight / 2 + WINDOW_HEIGHT / 2;
+    if (drawStart < 0) drawStart = 0;
+
+    int drawEnd = lineHeight / 2 + WINDOW_HEIGHT / 2;
+    if (drawEnd >= WINDOW_HEIGHT) drawEnd = WINDOW_HEIGHT - 1;
+
+    int lineWidth = round(WINDOW_WIDTH / (float) FOV);
+    for(int i = 0; i < lineWidth; i++)
+	    SDL_RenderDrawLine(renderer, rayAngle * lineWidth + i, drawStart, rayAngle * lineWidth + i, drawEnd);
+
     if(tileFound) {
 
         intersection = rayStart + rayDir * distance;
@@ -109,7 +122,10 @@ void Player::drawRays(SDL_Renderer *renderer, int *map, float cellSize, float ra
         intersection *= cellSize;
     }
 
+    SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
     SDL_RenderDrawLine(renderer, position.x, position.y, intersection.x, intersection.y);
+
+
 }
 
 void Player::move(glm::vec2 inputVec) {

@@ -6,6 +6,8 @@
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
+#define FOV 45
+
 #define FPS 75
 #define FRAME_TARGET_TIME (1000 / FPS) //1000 miliseconds / FPS
 

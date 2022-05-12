@@ -15,7 +15,7 @@ SDL_Renderer* renderer = NULL;
 bool game_is_running = false;
 
 World world;
-Player player(glm::vec2(90, 90), glm::vec2(8, 8), 200);
+Player player(glm::vec2(90, 90), glm::vec2(4, 4), 100);
 
 
 //temporary input system
@@ -69,7 +69,7 @@ void setup() { //Initialize Game
 
     int map[] = {
     1, 1, 1, 1, 1, 1, 1, 1,
-    1, 0, 0, 0, 0, 0 ,0 ,1,
+    1, 0, 0, 0, 0, 1 ,0 ,1,
     1, 0 ,0 ,0 ,0 ,0 ,0, 1,
     1, 1, 1, 0, 0, 0, 0, 1,
     1, 0, 0, 0, 0 ,0, 1, 1,
@@ -79,7 +79,7 @@ void setup() { //Initialize Game
     };
 
     glm::vec2 mapSize = glm::vec2(8, 8);
-    int cellSize = 64;
+    int cellSize = 32;
 
     world.init(map, mapSize, cellSize);
 }
@@ -95,12 +95,12 @@ void draw() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
+
+    for(int i = 0; i < FOV; i++)
+        player.drawRays(renderer, world.map, world.getMapSize(), world.getCellSize(), i);
+
     world.drawMap(renderer);
-
     player.draw(renderer);
-
-    for(int i = 0; i < 45; i++)
-        player.drawRays(renderer, world.map, 64, i);
 
     SDL_RenderPresent(renderer); //Buffer Swap
 

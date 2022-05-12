@@ -7,19 +7,24 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+using Vec2 = glm::vec2;
+
 class World {
 
     private:
-        glm::vec2 mapSize;
+        Vec2 mapSize;
         int cellSize;
     public:
         int* map;
         World();
-        World(int* map, glm::vec2 mapSize, int cellSize);
+        World(int* map, Vec2 mapSize, int cellSize);
         ~World();
-        void init(int* map, glm::vec2 mapSize, int cellSize);
+        void init(int* map, Vec2 mapSize, int cellSize);
         void drawMap(SDL_Renderer *renderer);
         void drawRays(int fov);
+
+        int getCellSize();
+        Vec2 getMapSize();
 
 };
 
