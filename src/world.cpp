@@ -2,16 +2,7 @@
 
 #include <raycaster/world.h>
 
-World::World() {
-    
-}
-
-World::~World() {
-    
-    delete[] map;
-}
-
-void World::init(int* map, Vec2 mapSize, int cellSize) {
+World::World(int* map, Vec2 mapSize, int cellSize) {
 
     int size = mapSize.x * mapSize.y;
     this->map = new int[size];
@@ -23,7 +14,10 @@ void World::init(int* map, Vec2 mapSize, int cellSize) {
 
 }
 
-
+World::~World() {
+    
+    delete[] map;
+}
 
 void World::drawMap(SDL_Renderer *renderer) {
 

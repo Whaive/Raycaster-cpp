@@ -12,10 +12,10 @@
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
-bool game_is_running = false;
+World* world;
+Player* player;
 
-World world;
-Player player(glm::vec2(90, 90), glm::vec2(4, 4), 100);
+bool game_is_running = false;
 
 
 //temporary input system
@@ -61,7 +61,7 @@ void process_input() {
         break;
     }
 
-    player.move(glm::vec2(d - a, w - s));
+    
 }
 
 
@@ -81,12 +81,13 @@ void setup() { //Initialize Game
     glm::vec2 mapSize = glm::vec2(8, 8);
     int cellSize = 32;
 
-    world.init(map, mapSize, cellSize);
+    world = new World(map, mapSize, cellSize); 
+    player = new Player(glm::vec2(90, 90), glm::vec2(4, 4), 100);
 }
 
 void update() {
 
-    
+    player->move(glm::vec2(d - a, w - s));
 
 }
 
@@ -97,10 +98,10 @@ void draw() {
 
 
     for(int i = 0; i < FOV; i++)
-        player.drawRays(renderer, world.map, world.getMapSize(), world.getCellSize(), i);
+        player->drawView(renderer, world, i);
 
-    world.drawMap(renderer);
-    player.draw(renderer, true);
+    world->drawMap(renderer);
+    player->draw(renderer, true);
 
     SDL_RenderPresent(renderer); //Buffer Swap
 
@@ -121,6 +122,8 @@ int main(int argc, char* argv[]) {
     }
 
     destroyWindow(window, renderer);
+    delete world;
+    delete player;
 
     return 0;
 

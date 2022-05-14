@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include "common.h"
+#include "world.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -15,7 +16,7 @@ class Player {
         Player(glm::vec2 position, glm::vec2 size, float speed);
         void move(glm::vec2 inputVec);
         void draw(SDL_Renderer *renderer, bool drawRays = false);
-        void drawRays(SDL_Renderer *renderer, int *map, glm::vec2 mapSize, float cellSize, int rayAngle);
+        void drawView(SDL_Renderer *renderer, World* world, int rayAngle);
 
     private:
         glm::vec2 position;

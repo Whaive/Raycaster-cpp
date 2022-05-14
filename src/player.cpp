@@ -2,13 +2,8 @@
 #include <cmath>
 
 #include <raycaster/player.h>
-#include <raycaster/common.h>
 
 #define DG 0.01745329
-
-Player::Player() {
-
-}
 
 Player::Player(glm::vec2 position, glm::vec2 size, float speed) {
 
@@ -16,10 +11,9 @@ Player::Player(glm::vec2 position, glm::vec2 size, float speed) {
         this->size = size;
         this->speed = speed;
 
-        this->angle = 0.1;
+        this->angle = 0.5;
         this->rotation = glm::vec2(cos(angle), sin(angle));
         this->lastFrameTime = 0;
-        this->rotationForce = 0.1;
 
 }
 
@@ -41,15 +35,23 @@ void Player::draw(SDL_Renderer *renderer, bool drawRays) {
             SDL_RenderDrawLine(renderer, position.x, position.y, rays[i].x, rays[i].y);
 }
 
-void Player::drawRays(SDL_Renderer *renderer, int *map, glm::vec2 mapSize, float cellSize, int rayAngle) {
+/*
+    For rendering the view of the player, we use the DDA Algorithm
+    this algorithm is used in tile/grid based worlds to generate rays in an optimized way
+    by making no more than 2 hit checks on every grid cell. It is a way better approach than
+    making a constant check on the cell, and checking what grid cell is hitting
 
-    glm::vec2 rayStart = position / cellSize;
+    Note: The space needs to be defined in Unit Coordinates
+*/
+void Player::drawView(SDL_Renderer *renderer, World* world, int rayAngle) {
+
+    glm::vec2 rayStart = position / (float) world->getCellSize();
     glm::vec2 rayDir = glm::vec2(cos(angle + DG * rayAngle), sin(angle + DG * rayAngle));
 
-    glm::vec2 stepSize = glm::vec2(sqrt(1 + pow(rayDir.y / rayDir.x, 2)), sqrt(1 + pow(rayDir.x / rayDir.y, 2))); //Delta Distance
+    glm::vec2 stepSize = glm::vec2(sqrt(1 + pow(rayDir.y / rayDir.x, 2)), sqrt(1 + pow(rayDir.x / rayDir.y, 2)));
     glm::ivec2 mapCheck = rayStart;
 
-    glm::vec2 rayLength; // stepDistance
+    glm::vec2 rayLength;
 
     glm::vec2 step;
 
@@ -99,9 +101,9 @@ void Player::drawRays(SDL_Renderer *renderer, int *map, glm::vec2 mapSize, float
             SDL_SetRenderDrawColor(renderer, 128, 0, 0, 255);
         }
 
-        if(mapCheck.x >= 0 && mapCheck.x < mapSize.x && mapCheck.y >= 0 && mapCheck.y < mapSize.y) {
+        if(mapCheck.x >= 0 && mapCheck.x < world->getMapSize().x && mapCheck.y >= 0 && mapCheck.y < world->getMapSize().y) {
 
-            if(map[mapCheck.x * 8 + mapCheck.y] == 1) {
+            if(world->map[mapCheck.x * 8 + mapCheck.y] == 1) {
                 tileFound = true;
             }
         }
@@ -123,7 +125,7 @@ void Player::drawRays(SDL_Renderer *renderer, int *map, glm::vec2 mapSize, float
 
         rays[rayAngle] = rayStart + rayDir * distance;
 
-        rays[rayAngle] *= cellSize;
+        rays[rayAngle] *= world->getCellSize();
     }
 
     //SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
