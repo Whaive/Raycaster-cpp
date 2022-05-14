@@ -23,7 +23,7 @@ Player::Player(glm::vec2 position, glm::vec2 size, float speed) {
 
 }
 
-void Player::draw(SDL_Renderer *renderer) {
+void Player::draw(SDL_Renderer *renderer, bool drawRays) {
 
     SDL_Rect playerRect = {
         (int)position.x,
@@ -35,9 +35,13 @@ void Player::draw(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
     SDL_RenderFillRect(renderer, &playerRect);
     SDL_RenderDrawLine(renderer, position.x, position.y, position.x + rotation.x*10, position.y + rotation.y*10);
+
+    if(drawRays)
+        for(int i = 0; i < FOV; i++)
+            SDL_RenderDrawLine(renderer, position.x, position.y, rays[i].x, rays[i].y);
 }
 
-void Player::drawRays(SDL_Renderer *renderer, int *map, glm::vec2 mapSize, float cellSize, float rayAngle) {
+void Player::drawRays(SDL_Renderer *renderer, int *map, glm::vec2 mapSize, float cellSize, int rayAngle) {
 
     glm::vec2 rayStart = position / cellSize;
     glm::vec2 rayDir = glm::vec2(cos(angle + DG * rayAngle), sin(angle + DG * rayAngle));
@@ -117,13 +121,13 @@ void Player::drawRays(SDL_Renderer *renderer, int *map, glm::vec2 mapSize, float
 
     if(tileFound) {
 
-        intersection = rayStart + rayDir * distance;
+        rays[rayAngle] = rayStart + rayDir * distance;
 
-        intersection *= cellSize;
+        rays[rayAngle] *= cellSize;
     }
 
-    SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-    SDL_RenderDrawLine(renderer, position.x, position.y, intersection.x, intersection.y);
+    //SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+    //SDL_RenderDrawLine(renderer, position.x, position.y, intersection.x, intersection.y);
 
 
 }

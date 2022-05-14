@@ -73,7 +73,7 @@ void setup() { //Initialize Game
     1, 0 ,0 ,0 ,0 ,0 ,0, 1,
     1, 1, 1, 0, 0, 0, 0, 1,
     1, 0, 0, 0, 0 ,0, 1, 1,
-    1, 0, 0, 0, 0, 0, 0, 1,
+    1, 0, 0, 0, 1, 0, 0, 1,
     1, 0, 0, 0, 0, 0, 0, 1, 
     1, 1, 1, 1, 1, 1, 1, 1
     };
@@ -100,7 +100,7 @@ void draw() {
         player.drawRays(renderer, world.map, world.getMapSize(), world.getCellSize(), i);
 
     world.drawMap(renderer);
-    player.draw(renderer);
+    player.draw(renderer, true);
 
     SDL_RenderPresent(renderer); //Buffer Swap
 
